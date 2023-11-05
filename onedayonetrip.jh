@@ -1,0 +1,72 @@
+
+application {
+  config {
+    baseName OneDayOneTrip
+    applicationType monolith
+    packageName org.qualihub.odot.web
+    authenticationType jwt
+    prodDatabaseType postgresql
+    clientFramework angularX
+  }
+  entities *
+}
+
+entity Trip {
+ name String required maxlength(70)
+ shortCode String maxlength (8)
+ creation LocalDate
+ description TextBlob
+ activity ActivityType
+ visibility Visibility
+ ownerId Integer
+}
+
+entity Picture {
+ storePath String required maxlength(70)
+ name String
+}
+
+entity Trace {
+ gpxPath String required maxlength(70)
+}
+
+entity Trackpoint {
+lat Double
+lng Double
+ele Double
+time ZonedDateTime
+}
+
+relationship OneToMany {
+  Trip{pictures(name)} to Picture{trip(name)}
+}
+relationship OneToOne {
+  Trip{cover(name)} to Picture{coverTrip(name)}
+}
+relationship OneToMany {
+  Trip{traces(name)} to Trace{trip(name)}
+}
+relationship OneToMany {
+  Trace{trackpoints(name)} to Trackpoint{trace(name)}
+}
+
+enum ActivityType {
+ SKI, 
+ SKI_RANDO,
+ KAYAK,
+ VELO,
+ RANDO
+}
+enum Visibility {
+PUBLIC, 
+PROTECTED,
+PRIVATE,
+DRAFT
+}
+
+// Set pagination options
+paginate Trip with pagination
+
+//Use Data Transfert Objects (DTO)
+dto * with mapstruct
+service * with serviceClass
